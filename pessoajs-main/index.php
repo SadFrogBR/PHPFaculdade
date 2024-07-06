@@ -52,6 +52,12 @@
 					dv=".listar";
 					
 				}
+				if($(dv).attr("class") == "editar"){
+					pessoa("editar");
+					$(dv).hide();
+					$(".listar").show();
+					dv=".listar";
+				}
 				ultimo=dv;//atualiza a div visivel
 		});
 		function pessoa(pg="listar"){
@@ -80,16 +86,40 @@
 						$.ajax({
 							url: "excluir.php",  
         					method: "POST",      
-        					data: { idDeleta: idDeleta },    
-							
+        					data: { idDeleta: idDeleta },
+							context: document.body    
 						}).done(function(response){
-							if(response){
-								localizacao.remove() 
-							}else{
-								console.log('Erro')
+							let msg=$.parseJSON(response);///ransforma o retorno em objeto JSON
+							if(msg.resposta){
+								localizacao.remove();
 							}
+							console.log(msg);
+							$(".msg")[0].innerHTML=msg.texto;
+							$(".msg").attr("style","background-color:"+msg.color);
+							$(".msg").show();
+							$(".msg").show(200);
+							
+							
 						})
 					});
+					if(pg=="editar")
+						$(".btn-editar").show();
+					
+					$(".btn-editar").click(function(){
+						let idEditar = $(this).parent().find(".nome").attr("data-id")
+						let localizacao = $(this).parent()
+						console.log(idEditar)
+						html='	<form action="editar.php" method="POST"> <div>Nome:</div> <input type="text" name="nome" placeholder="Nome"> <div>Idade:</div> <input type="text" name="idade" placeholder="Idade"> <div>Login:</div> <input type="text" name="login" placeholder="Login">
+			<div>Senha</div>
+			<input type="text" name="senha" placeholder="Senha">
+			<div>Imagem:</div>
+			<input type="file" name="img"><br>
+			<input id="salvar" type="submit" name="salvar" value="Salvar">
+	</form>'
+					
+					});
+
+
 						
 				});
 		}
